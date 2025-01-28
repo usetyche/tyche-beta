@@ -16,20 +16,20 @@ function WalletDetailsPage() {
   const [tokens, setTokens] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const navigate = useNavigate();
-  useEffect(() => {
-    //check if user is logged in from backend with useCustomAxios
-    customAxios.get("/api/v1/auth/me").then((response) => {
-      console.log("response", response);
-    });
-    console.log(currentUser);
-  }, []);
+  // useEffect(() => {
+  //   //check if user is logged in from backend with useCustomAxios
+  //   customAxios.get("/api/v1/auth/me").then((response) => {
+  //     console.log("response", response);
+  //   });
+  //   console.log(currentUser);
+  // }, []);
 
   useEffect(() => {
     async function fetchData() {
       try {
         const searchNetwork = "solana";
-        const result = await axios.get(
-          `/backend/api/v1/wallets/${searchNetwork}/balance?walletAddress=${address}`
+        const result = await customAxios.get(
+          `/api/v1/wallets/${searchNetwork}/balance?walletAddress=${address}`
         );
         if (result.status !== 200) {
           console.log("Error fetching wallet info: ", result.data.error);
@@ -52,8 +52,8 @@ function WalletDetailsPage() {
     async function fetchWalletTransactions() {
       try {
         const searchNetwork = "solana";
-        const result = await axios.get(
-          `/backend/api/v1/wallets/${searchNetwork}/transactions?walletAddress=${address}`
+        const result = await customAxios.get(
+          `/api/v1/wallets/${searchNetwork}/transactions?walletAddress=${address}`
         );
         if (result.status !== 200) {
           console.log(

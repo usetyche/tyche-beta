@@ -18,7 +18,8 @@ function Header() {
   const navigate = useNavigate();
   let currentRoute = window.location.pathname;
   const [showSettingsPopup, setShowSettingsPopup] = useState(false);
-  const loggedIn = document.cookie.includes("loggedIn=true");
+  //check localstorage if includes token
+  const loggedIn = localStorage.getItem("token") ? true : false;
 
   return (
     <>
@@ -87,17 +88,20 @@ function Header() {
 
               {/* Login Button */}
               {loggedIn ? (
-                <button className="w-10 h-10">
-                  <div
-                    className="flex items-center justify-center bg-tycheDarkGray text-black text-lg font-[300] w-full h-full rounded-full"
+                
+                  <button
+                    className="flex items-center justify-center bg-tycheDarkGray text-black text-lg font-[300] w-10 h-10 rounded-full"
                     onClick={() => {
-                      document.cookie = "loggedIn=false";
+                      console.log("Logout button clicked");
+                      localStorage.removeItem("token");
+                      localStorage.removeItem("savedWallets");
+                      localStorage.removeItem("settings");
                       window.location.reload();
                     }}
                   >
                     <p>A</p> {/* User's first letter of the name  */}
-                  </div>
-                </button>
+                  </button>
+                
               ) : (
                 <button
                   className="flex items-center justify-center bg-tychePrimary font-[300] text-white text-lg px-4 py-2 tracking-wide rounded-[60px]"
@@ -131,7 +135,10 @@ function Header() {
                 <div
                   className="flex items-center justify-center bg-tycheDarkGray text-black text-[20px] font-[300] w-full h-full rounded-full"
                   onClick={() => {
-                    document.cookie = "loggedIn=false";
+                    console.log("Logout button clicked");
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("savedWallets");
+                    localStorage.removeItem("settings");
                     window.location.reload();
                   }}
                 >
