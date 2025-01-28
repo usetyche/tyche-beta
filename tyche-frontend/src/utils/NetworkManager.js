@@ -16,13 +16,6 @@ const networkMappings = {
   // Add other networks as needed
 };
 
-const chainIdMappings = {
-  eth: "1",
-  bsc: "56",
-  avaxc: "43114",
-  btc: "0",
-};
-
 const networkIcons = {
   sol: solIcon,
   eth: ethIcon,
@@ -31,16 +24,6 @@ const networkIcons = {
   base: baseIcon,
   btc: btcIcon,
 };
-
-export function getNetworkShortName(networkName) {
-  const normalizedNetworkName = networkName.toLowerCase();
-  return networkMappings[normalizedNetworkName] || "";
-}
-
-export function getChainIdByNetwork(networkName) {
-  //const shortName = getNetworkShortName(networkName);
-  return chainIdMappings[networkName] || null;
-}
 
 export function getNetworkIcon(networkName) {
   //const shortName = getNetworkShortName(networkName);

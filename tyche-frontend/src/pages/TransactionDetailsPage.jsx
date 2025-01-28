@@ -50,16 +50,16 @@ function TransactionDetailsPage() {
 
   const handleShare = async () => {
     const shareUrl = window.location.href;
-    
+
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Tyche Transaction Details',
-          text: 'Check out this transaction on Tyche',
-          url: shareUrl
+          title: "Tyche Transaction Details",
+          text: "Check out this transaction on Tyche",
+          url: shareUrl,
         });
       } catch (err) {
-        console.log('Share failed:', err);
+        console.log("Share failed:", err);
         copyToClipboard(shareUrl);
       }
     } else {
@@ -69,19 +69,19 @@ function TransactionDetailsPage() {
 
   const copyToClipboard = async (text) => {
     try {
-      const tempInput = document.createElement('input');
+      const tempInput = document.createElement("input");
       tempInput.value = text;
       document.body.appendChild(tempInput);
-      
+
       tempInput.select();
-      document.execCommand('copy');
-      
+      document.execCommand("copy");
+
       document.body.removeChild(tempInput);
-      
+
       setShareSuccess(true);
       setTimeout(() => setShareSuccess(false), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      console.error("Failed to copy:", err);
     }
   };
 
@@ -204,7 +204,7 @@ function TransactionDetailsPage() {
           <div className="flex flex-row items-center justify-between">
             <div className="flex flex-col">
               <p className="text-black text-[14px] font-bold">From:</p>
-              <p 
+              <p
                 className="text-[14px] text-tycheBlue font-[350] cursor-pointer hover:underline"
                 onClick={handleAddressClick(sent_from)}
               >
@@ -218,7 +218,7 @@ function TransactionDetailsPage() {
             />
             <div className="flex flex-col items-end">
               <p className="text-black text-[14px] font-bold">To:</p>
-              <p 
+              <p
                 className="text-[14px] text-tycheBlue font-[350] cursor-pointer hover:underline"
                 onClick={handleAddressClick(sent_to)}
               >

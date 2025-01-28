@@ -11,7 +11,7 @@ const store = configureStore({
     global: globalReducer,
     premium: premiumReducer,
     settings: settingsReducer,
-    wallet: walletReducer, // Wallet slice'ı store'a ekleyin
+    wallet: walletReducer,
   },
 });
 

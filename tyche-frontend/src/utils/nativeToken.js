@@ -1,3 +1,5 @@
+// TODO: kullanmazsak kalkacak
+
 import axios from "axios";
 
 // Function to fetch price data from the CoinGecko API
