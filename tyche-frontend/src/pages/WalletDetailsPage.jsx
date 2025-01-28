@@ -14,6 +14,7 @@ function WalletDetailsPage() {
   const customAxios = useCustomAxios();
   const currentUser = useSelector((state) => state.user);
   const [tokens, setTokens] = useState([]);
+  const [transactions, setTransactions] = useState([]);
   const navigate = useNavigate();
   // const tokens = [
   //   {
@@ -57,124 +58,168 @@ function WalletDetailsPage() {
         navigate("/404");
       }
     }
+
+    async function fetchWalletTransactions(){
+      try {
+        const searchNetwork = "solana";
+        const result = await axios.get(`/backend/api/v1/wallets/${searchNetwork}/transactions?walletAddress=${address}`);
+        if (result.status !== 200) {
+          console.log("Error fetching wallet transactions: ", result.data.error);
+          return;
+        }
+        //console.log("WALLET TRANSACTIONS: ", result);
+        const resultTransactions = result.data.data.map((transaction) => {
+          console.log(transaction.nativeTransfers[0]);
+          return {
+            txId: transaction.signature,
+            transactionTime: transaction.timestamp,
+            attributes: {
+              hash: transaction.signature,
+              sent_from: transaction.nativeTransfers[0]?.from,
+              sent_to: transaction.nativeTransfers[0]?.to,
+              mined_at: transaction.timestamp,
+              transfers: transaction.nativeTransfers.map((transfer) => {
+                return {
+                  fungible_info: {
+                    symbol: transfer.amount.symbol,
+                    icon: "https://assets.coingecko.com/coins/images/4128/small/solana.png",
+                  },
+                  quantity: {
+                    float: transfer.amount.amount,
+                  },
+                  value: transfer.amount.equivalents.USD,
+                };
+              }),
+            },
+          };
+        });
+
+        setTransactions(resultTransactions);
+      } catch (error) {
+        alert("Error fetching wallet transactions: " + error);
+        navigate("/404");
+      }
+    }
+
     fetchData();
+    fetchWalletTransactions();
 
   }, [address, network, location.pathname]);
 
   const currentAddress = address || "zGmof8SeyvHKnSEWv4i2mVv7MYe85D3zZqsTBjsKXSV";
 
-  const transactions = [
-    {
-      txId: "0x123",
-      transactionTime: "2023-05-01T10:00:00Z",
-      attributes: {
-        hash: "0x12jojoas3",
-        sent_from: "0x1fjbfnjf3",
-        sent_to: currentAddress, // You are the receiver
-        mined_at: "2023-05-01T10:00:00Z",
-        transfers: [
-          {
-            fungible_info: {
-              symbol: "SOL",
-              icon: "https://assets.coingecko.com/coins/images/4128/small/solana.png",
-            },
-            quantity: {
-              float: 1.5,
-            },
-            value: (1.5 * 145.59).toFixed(2), // 218.39 USD
-          },
-        ],
-      },
-    },
-    {
-      txId: "0x456",
-      transactionTime: "2023-07-01T14:30:00Z",
-      attributes: {
-        hash: "0x45ljxojc6",
-        sent_from: currentAddress, // You are the sender
-        sent_to: "0x45kjncx88jnjn6",
-        mined_at: "2023-07-01T14:30:00Z",
-        transfers: [
-          {
-            fungible_info: {
-              symbol: "SOL",
-              icon: "https://assets.coingecko.com/coins/images/4128/small/solana.png",
-            },
-            quantity: {
-              float: 2.3,
-            },
-            value: (2.3 * 145.59).toFixed(2), // 334.86 USD
-          },
-        ],
-      },
-    },
-    {
-      txId: "0x56",
-      transactionTime: "2023-07-01T14:30:00Z",
-      attributes: {
-        hash: "0x45ljxomcjc6",
-        sent_from: currentAddress, // You are the sender
-        sent_to: "0x45kjncxjxjnjnjn6",
-        mined_at: "2023-07-01T14:30:00Z",
-        transfers: [
-          {
-            fungible_info: {
-              symbol: "SOL",
-              icon: "https://assets.coingecko.com/coins/images/4128/small/solana.png",
-            },
-            quantity: {
-              float: 2.3,
-            },
-            value: (2.3 * 145.59).toFixed(2), // 334.86 USD
-          },
-        ],
-      },
-    },
-    {
-      txId: "0x101",
-      transactionTime: "2023-08-25T11:00:00Z",
-      attributes: {
-        hash: "0x10dckjnbjksn1",
-        sent_from: currentAddress, // You are the sender
-        sent_to: "0x46xcjnjn",
-        mined_at: "2023-08-25T11:00:00Z",
-        transfers: [
-          {
-            fungible_info: {
-              symbol: "SOL",
-              icon: "https://assets.coingecko.com/coins/images/4128/small/solana.png",
-            },
-            quantity: {
-              float: 1.25,
-            },
-            value: (1.25 * 145.59).toFixed(2), // 181.99 USD
-          },
-        ],
-      },
-    },
-    {
-      txId: "0x11",
-      transactionTime: "2023-09-01T12:00:00Z",
-      attributes: {
-        hash: "0x109999kh1",
-        sent_from: "0x12sss3",
-        sent_to: currentAddress, // You are the receiver
-        mined_at: "2023-09-01T12:00:00Z",
-        transfers: [
-          {
-            fungible_info: {
-              symbol: "SOL",
-              icon: "https://assets.coingecko.com/coins/images/4128/small/solana.png",
-            },
-            quantity: {
-              float: 3.0,
-            },
-            value: (3.0 * 145.59).toFixed(2), // 436.77 USD
-          },
-        ],
-      },
-    },
-  ];
+  // const transactions = [
+  //   {
+  //     txId: "0x123",
+  //     transactionTime: "2023-05-01T10:00:00Z",
+  //     attributes: {
+  //       hash: "0x12jojoas3",
+  //       sent_from: "0x1fjbfnjf3",
+  //       sent_to: currentAddress, // You are the receiver
+  //       mined_at: "2023-05-01T10:00:00Z",
+  //       transfers: [
+  //         {
+  //           fungible_info: {
+  //             symbol: "SOL",
+  //             icon: "https://assets.coingecko.com/coins/images/4128/small/solana.png",
+  //           },
+  //           quantity: {
+  //             float: 1.5,
+  //           },
+  //           value: (1.5 * 145.59).toFixed(2), // 218.39 USD
+  //         },
+  //       ],
+  //     },
+  //   },
+  //   {
+  //     txId: "0x456",
+  //     transactionTime: "2023-07-01T14:30:00Z",
+  //     attributes: {
+  //       hash: "0x45ljxojc6",
+  //       sent_from: currentAddress, // You are the sender
+  //       sent_to: "0x45kjncx88jnjn6",
+  //       mined_at: "2023-07-01T14:30:00Z",
+  //       transfers: [
+  //         {
+  //           fungible_info: {
+  //             symbol: "SOL",
+  //             icon: "https://assets.coingecko.com/coins/images/4128/small/solana.png",
+  //           },
+  //           quantity: {
+  //             float: 2.3,
+  //           },
+  //           value: (2.3 * 145.59).toFixed(2), // 334.86 USD
+  //         },
+  //       ],
+  //     },
+  //   },
+  //   {
+  //     txId: "0x56",
+  //     transactionTime: "2023-07-01T14:30:00Z",
+  //     attributes: {
+  //       hash: "0x45ljxomcjc6",
+  //       sent_from: currentAddress, // You are the sender
+  //       sent_to: "0x45kjncxjxjnjnjn6",
+  //       mined_at: "2023-07-01T14:30:00Z",
+  //       transfers: [
+  //         {
+  //           fungible_info: {
+  //             symbol: "SOL",
+  //             icon: "https://assets.coingecko.com/coins/images/4128/small/solana.png",
+  //           },
+  //           quantity: {
+  //             float: 2.3,
+  //           },
+  //           value: (2.3 * 145.59).toFixed(2), // 334.86 USD
+  //         },
+  //       ],
+  //     },
+  //   },
+  //   {
+  //     txId: "0x101",
+  //     transactionTime: "2023-08-25T11:00:00Z",
+  //     attributes: {
+  //       hash: "0x10dckjnbjksn1",
+  //       sent_from: currentAddress, // You are the sender
+  //       sent_to: "0x46xcjnjn",
+  //       mined_at: "2023-08-25T11:00:00Z",
+  //       transfers: [
+  //         {
+  //           fungible_info: {
+  //             symbol: "SOL",
+  //             icon: "https://assets.coingecko.com/coins/images/4128/small/solana.png",
+  //           },
+  //           quantity: {
+  //             float: 1.25,
+  //           },
+  //           value: (1.25 * 145.59).toFixed(2), // 181.99 USD
+  //         },
+  //       ],
+  //     },
+  //   },
+  //   {
+  //     txId: "0x11",
+  //     transactionTime: "2023-09-01T12:00:00Z",
+  //     attributes: {
+  //       hash: "0x109999kh1",
+  //       sent_from: "0x12sss3",
+  //       sent_to: currentAddress, // You are the receiver
+  //       mined_at: "2023-09-01T12:00:00Z",
+  //       transfers: [
+  //         {
+  //           fungible_info: {
+  //             symbol: "SOL",
+  //             icon: "https://assets.coingecko.com/coins/images/4128/small/solana.png",
+  //           },
+  //           quantity: {
+  //             float: 3.0,
+  //           },
+  //           value: (3.0 * 145.59).toFixed(2), // 436.77 USD
+  //         },
+  //       ],
+  //     },
+  //   },
+  // ];
 
   
   const nfts = [

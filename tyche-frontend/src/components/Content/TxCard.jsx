@@ -21,9 +21,14 @@ function TxCard({ tx, currentAddress }) {
   function getRandomFloat(min, max) {
     return (Math.random() * (max - min) + min).toFixed(3);
   }
+  console.log(tx);
+  console.log("25 "+tx.attributes.transfers?.[0]?.fungible_info?.symbol);
+  //convert to string
+  console.log("26 "+tx.attributes.transfers?.[0]?.value.toString());
+  console.log("27 "+tx.attributes.transfers?.[0]?.quantity?.float);
 
   let symbol = tx.attributes.transfers?.[0]?.fungible_info?.symbol;
-  let value = tx.attributes.transfers?.[0]?.value;
+  let value = tx.attributes.transfers?.[0]?.value.toString();
   let amount = tx.attributes.transfers?.[0]?.quantity?.float;
 
   // Ensure icon is a string or provide a fallback value
