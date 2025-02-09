@@ -1,7 +1,28 @@
 import { useNavigate } from "react-router-dom";
+import useCustomAxios from "../hooks/useCustomAxios";
 
 function RegisterPage() {
   const navigate = useNavigate();
+  const customAxios = useCustomAxios();
+
+  const handleRegister = async () => {
+    try {
+      const emailInput = document.querySelector('input[type="email"]').value;
+      const passwordInput = document.querySelector('input[type="password"]').value;
+      const response = await customAxios.post("/api/v1/auth/register", {
+        email: emailInput,
+        password: passwordInput,
+      });
+      if (response.status === 200) {
+        alert("Registration successful! Please login.");
+        navigate("/login");
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
+    
+  };
+
   return (
     <div className="flex flex-col items-center justify-center mt-4 md:mt-[45px] px-4 md:px-0">
       <p className="text-2xl md:text-[32px] font-[350] tracking-wide text-tycheGrayBlack text-center mb-4 md:mb-[15px]">
@@ -33,7 +54,7 @@ function RegisterPage() {
         <div className="flex flex-col items-start justify-between w-full gap-4 md:gap-[28px]">
           <button
             className="flex justify-center bg-tychePrimary font-[300] text-white text-lg md:text-[24px] py-2 md:py-[9px] px-4 md:px-[52px] tracking-wide rounded-[60px] w-full"
-            onClick={() => navigate("username")}
+            onClick={handleRegister}
           >
             Register
           </button>

@@ -5,14 +5,14 @@ import WalletInfo from "../components/Content/WalletInfo";
 import { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import useCustomAxios from "../hooks/useCustomAxios";
-import { useSelector } from "react-redux";
-import axios from "axios";
+//import { useSelector } from "react-redux";
+//import axios from "axios";
 
 function WalletDetailsPage() {
   const { address, network } = useParams();
   const location = useLocation();
   const customAxios = useCustomAxios();
-  const currentUser = useSelector((state) => state.user);
+  //const currentUser = useSelector((state) => state.user);
   const [tokens, setTokens] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const navigate = useNavigate();
