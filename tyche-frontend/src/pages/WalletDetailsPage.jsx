@@ -15,6 +15,7 @@ function WalletDetailsPage() {
   //const currentUser = useSelector((state) => state.user);
   const [tokens, setTokens] = useState([]);
   const [transactions, setTransactions] = useState([]);
+  const [transactionsLoading, setTransactionsLoading] = useState(true);
   const navigate = useNavigate();
   // useEffect(() => {
   //   //check if user is logged in from backend with useCustomAxios
@@ -50,11 +51,13 @@ function WalletDetailsPage() {
     }
 
     async function fetchWalletTransactions() {
+      setTransactionsLoading(true);
       try {
         const searchNetwork = "solana";
         const result = await customAxios.get(
           `/api/v1/wallets/${searchNetwork}/transactions?walletAddress=${address}`
         );
+        setTransactionsLoading(false);
         if (result.status !== 200) {
           console.log(
             "Error fetching wallet transactions: ",
@@ -62,8 +65,8 @@ function WalletDetailsPage() {
           );
           return;
         }
-        const resultTransactions = result.data.data.map((transaction) => {
-          console.log(transaction.nativeTransfers[0]);
+        const resultTransactions = result.data.data.filter((transaction) => transaction.nativeTransfers && transaction.nativeTransfers.length > 0)
+        .map((transaction) => {
           return {
             txId: transaction.signature,
             transactionTime: transaction.timestamp,
@@ -174,6 +177,7 @@ function WalletDetailsPage() {
             />
             <div className="w-full">
               <TxHistory
+                transactionsLoading={transactionsLoading}
                 transactions={transactions}
                 currentNetwork={network}
                 currentAddress={currentAddress}
