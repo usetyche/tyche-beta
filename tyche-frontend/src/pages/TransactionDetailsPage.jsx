@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import goBackIcon from "./../assets/images/icons/goBackIcon.svg";
 import copyIcon from "./../assets/images/icons/walletCopyIcon.svg";
 import shareIcon from "./../assets/images/icons/shareIcon.svg";
@@ -10,6 +10,7 @@ import ZoomQRCode from "../components/Content/ZoomQRCode";
 import { convertWalletToTag } from "../utils/convertWalletToTag";
 import { useSelector } from "react-redux";
 import QRCode from "react-qr-code";
+import useCustomAxios from "../hooks/useCustomAxios";
 
 function TransactionDetailsPage() {
   const navigate = useNavigate();
@@ -18,11 +19,13 @@ function TransactionDetailsPage() {
   const [shareSuccess, setShareSuccess] = useState(false);
   const addresses = useSelector((state) => state.wallet.addresses);
   const selectedNetwork = useSelector((state) => state.global.selectedNetwork);
+  const customAxios = useCustomAxios();
+  const [transactionDetail, setTransactionDetail] = useState(null);
 
   const hash = window.location.pathname.split("/")[3];
 
-  const sent_from = "0xjhkjhasdygq9823421391802381823";
-  const sent_to = "0xnsljnjwe283t7y7w78651fdfscfwet2";
+  //const sent_from = "0xjhkjhasdygq9823421391802381823";
+  //const sent_to = "0xnsljnjwe283t7y7w78651fdfscfwet2";
 
   const tokens = [
     {
@@ -33,6 +36,30 @@ function TransactionDetailsPage() {
     },
     // Add more tokens if needed
   ];
+
+  useEffect(() => {
+    async function fetchTransactionDetails() {
+      try {
+        const result = await customAxios.get(
+          `/api/v1/transactions/${hash}?network=solana` // Adjust the network as needed
+        );
+        if (result.status !== 200) {
+          console.log("Error fetching transaction details: ", result.data.error);
+          return;
+        }
+        //console.log("Transaction Details: ", result.data.data);
+        setTransactionDetail(result.data.data);
+      } catch (error) {
+        alert("Error fetching transaction details: " + error);
+        navigate("/404");
+      }
+    }
+
+    fetchTransactionDetails();
+  }, []);
+
+
+
 
   const handleCopyHash = () => {
     const tempInput = document.createElement("input");
@@ -89,6 +116,13 @@ function TransactionDetailsPage() {
     window.location.href = `/${selectedNetwork}/address/${address}`;
   };
 
+  if (!transactionDetail) {
+    return (
+      <div className="flex items-center justify-center w-full h-full">
+        <p className="text-black text-[18px] font-bold">Loading...</p>
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col items-center justify-center w-full px-4 md:px-0 mt-4 md:mt-[50px]">
       <div className="w-full max-w-[915px] flex flex-col gap-4 md:gap-[11px]">
@@ -137,7 +171,7 @@ function TransactionDetailsPage() {
             <div className="flex flex-row gap-[15px]">
               <p className="text-black text-[14px] font-bold">Date:</p>
               <p className="text-[14px] text-black font-[350]">
-                1 May 2023 12:00:00
+                {new Date(transactionDetail.date).toLocaleString()}
               </p>
             </div>
             <div className="flex flex-row gap-[15px]">
@@ -149,7 +183,9 @@ function TransactionDetailsPage() {
             </div>
             <div className="flex flex-row gap-[15px]">
               <p className="text-black text-[14px] font-bold">Gas Fee:</p>
-              <p className="text-[14px] text-black font-[350]">0.001 USD</p>
+              <p className="text-[14px] text-black font-[350]">{
+                transactionDetail.gasFee.sol
+                } SOL</p>
             </div>
           </div>
 
@@ -206,9 +242,9 @@ function TransactionDetailsPage() {
               <p className="text-black text-[14px] font-bold">From:</p>
               <p
                 className="text-[14px] text-tycheBlue font-[350] cursor-pointer hover:underline"
-                onClick={handleAddressClick(sent_from)}
+                onClick={handleAddressClick(transactionDetail.from.pubkey)}
               >
-                {convertWalletToTag(sent_from, addresses)}
+                {convertWalletToTag(transactionDetail.from.pubkey, addresses)}
               </p>
             </div>
             <img
@@ -220,9 +256,9 @@ function TransactionDetailsPage() {
               <p className="text-black text-[14px] font-bold">To:</p>
               <p
                 className="text-[14px] text-tycheBlue font-[350] cursor-pointer hover:underline"
-                onClick={handleAddressClick(sent_to)}
+                onClick={handleAddressClick("to_address")}
               >
-                {convertWalletToTag(sent_to, addresses)}
+                {convertWalletToTag("to_address", addresses)}
               </p>
             </div>
           </div>
@@ -233,7 +269,7 @@ function TransactionDetailsPage() {
           <p className="text-[18px] font-bold mb-[15px]">Transferred Assets</p>
           <div className="flex flex-col gap-[12px]">
             {tokens.map((token, index) => (
-              <TokenCard key={index} token={token} />
+              <TokenCard key={index} token={token} transferAmount={transactionDetail.amount} price={transactionDetail.fiatValues.USD}/>
             ))}
           </div>
         </div>

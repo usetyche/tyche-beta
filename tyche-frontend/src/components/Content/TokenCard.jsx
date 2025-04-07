@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import formatCurrency from "../../utils/formatCurrency";
 import { getNetworkIcon } from "../../utils/NetworkManager";
 
-function TokenCard({ token }) {
+function TokenCard({ token, transferAmount, price }) {
   const [formattedValue, setFormattedValue] = useState(null);
   const selectedCurrency = useSelector((state) => state.settings.currency);
   const selectedNetwork = useSelector((state) => state.global.selectedNetwork); // Fetching networkName from Redux store
@@ -21,12 +21,17 @@ function TokenCard({ token }) {
         console.error("Error calculating token value:", error);
       }
     };
-
+    if (transferAmount !== undefined && price !== undefined) {
+      setFormattedValue(transferAmount);
+      return;
+    }
     fetchTokenValue();
   }, [
     token.amount,
+    transferAmount,
     token.tokenContractAddress,
     token.valueUsd,
+    price,
     selectedNetwork, // Using the selectedNetwork from Redux
     selectedCurrency,
   ]);
@@ -50,14 +55,14 @@ function TokenCard({ token }) {
       {/* Token Info */}
       <div className="token-info flex items-center justify-start w-full">
         <p className="text-tycheGray text-[12px] justify-start">
-          {token.amount} {token.symbol}
+          {transferAmount !== undefined ? transferAmount : token.amount} {token.symbol}
         </p>
       </div>
 
       {/* Token Amount & Value */}
       <div className="token-amount flex items-center justify-end w-full">
         <span className="text-black text-[12px] justify-end">
-          {formattedValue || token.amount} {selectedCurrency}
+          {price !== undefined ? price : formattedValue || token.amount} {selectedCurrency}
         </span>
       </div>
     </div>
